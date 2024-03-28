@@ -151,5 +151,6 @@ ptfv <- ggplot(df_aov, aes(x=factor(treatment, levels=order), y = emmean, fill =
   theme_bw() + scale_fill_manual(values=colors) + scale_y_continuous(limits=c(0,0.6))
 ptfv
 
+library(gridExtra)
 grid.arrange(gcfv, mafv, ptfv)
 
