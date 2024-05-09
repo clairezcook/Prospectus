@@ -50,7 +50,7 @@ ggplot(bacnut, aes(x=Days, y=nutpreyratio, fill=Treatment)) +
   geom_smooth(se=FALSE, color="black") +
   facet_grid(~factor(Treatment, levels=c("Control", "Iron Addition", "DFB (iron chelator)")), scales="free") +
   theme_bw() + 
-  theme(text = element_text(size = 22)) +
+  theme(text = element_text(size = 22), legend.position = 'none') +
   scale_x_continuous(breaks=c(0,2,7,11)) + 
   labs(x="Time (days)", y="Inorganic Nitrogen : Bacteria Ratio") +
   geom_hline(yintercept = .000001, color='#CA3542', linetype=2) +
