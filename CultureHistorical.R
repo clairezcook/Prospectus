@@ -30,12 +30,13 @@ df_aov <- data %>%
   dplyr::select(-.group)
 
 order <- c("Replete", "Low Mn", "Low Fe", "Low Fe, Mn")
-ggplot(df_aov, aes(x= species, y = emmean, fill = factor(treatment, levels =order)))+
+size <- ggplot(df_aov, aes(x= species, y = emmean, fill = factor(treatment, levels =order)))+
   geom_bar(position = 'dodge', stat = 'identity', color="black")+
   geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), position = position_dodge(.9), width = 0.2) + 
   geom_text(aes(label = cld, y = upper.CL), vjust = -0.5, position = position_dodge(0.9),size = 3)+
-  labs(x="Culture", y="Diameter (µm)", fill="Media Type")+
-  theme_bw() + scale_fill_manual(values=colors)
+  labs(x="Culture", y="Diameter (µm)", fill="Media Type", title="b)")+
+  theme_bw() + scale_fill_manual(values=colors)+
+  theme(legend.position = 'none')
 
 #### Growth Rates ####
 setwd("~/Library/CloudStorage/OneDrive-UniversityofGeorgia/Lab/prelimMIXO/Growth/ChelexedGS_Raw")
@@ -63,8 +64,9 @@ mixo <- ggplot(df_aov, aes(x= species, y = emmean, fill = factor(treatment, leve
   geom_bar(position = 'dodge', stat = 'identity', color="black")+
   geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), position = position_dodge(.9), width = 0.2) + 
   geom_text(aes(label = cld, y = upper.CL), vjust = -0.5, position = position_dodge(0.9),size = 3)+
-  labs(x="Culture", y="Growth Rate (1/day)", fill="Media Treatment")+
-  theme_bw()+  scale_fill_manual(values=colors)
+  labs(x="Culture", y="Growth Rate (1/day)", fill="Media Treatment", title="a)")+
+  theme_bw()+  scale_fill_manual(values=colors)+
+  theme(legend.position = 'none')
 mixo
 
 #### Fv/Fm ####
@@ -92,8 +94,9 @@ gcfv <- ggplot(df_aov, aes(x=factor(treatment, levels=order), y = emmean, fill =
   geom_bar(position = 'dodge', stat = 'identity', color="black")+
   geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), position = position_dodge(.9), width = 0.2) + 
   geom_text(aes(label = cld, y = upper.CL), vjust = -0.5, position = position_dodge(0.9),size = 3)+
-  labs(y="Fv/Fm", x="",fill="Media Type", title="G. Cryophilia Photosynthetic Efficiency (PSII)")+
-  theme_bw()+ scale_fill_manual(values=colors)+scale_y_continuous(limits=c(0,0.6))
+  labs(y="Fv/Fm", x="",fill="Media Type", title="c) G. cryophilia")+
+  theme_bw()+ scale_fill_manual(values=colors)+scale_y_continuous(limits=c(0,0.6))+
+  theme(legend.position = 'none', plot.margin = unit(c(0.25,3.35,0.25,0.25), "cm"))
 gcfv
 
 ## MA
@@ -119,7 +122,7 @@ mafv <- ggplot(df_aov, aes(x=factor(treatment, levels=order), y = emmean, fill =
   geom_bar(position = 'dodge', stat = 'identity', color="black")+
   geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), position = position_dodge(.9), width = 0.2) + 
   geom_text(aes(label = cld, y = upper.CL), vjust = -0.5, position = position_dodge(0.9),size = 3)+
-  labs(y="Fv/Fm", x="",fill="Media Type", title="M. Antarctica Photosynthetic Efficiency (PSII)")+
+  labs(y="Fv/Fm", x="",fill="Media Type", title="M. Antarctica")+
   theme_bw() + scale_fill_manual(values=colors) + scale_y_continuous(limits=c(-0.04,0.25))
 mafv
 
@@ -147,10 +150,16 @@ ptfv <- ggplot(df_aov, aes(x=factor(treatment, levels=order), y = emmean, fill =
   geom_bar(position = 'dodge', stat = 'identity', color="black")+
   geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), position = position_dodge(.9), width = 0.2) + 
   geom_text(aes(label = cld, y = upper.CL), vjust = -0.5, position = position_dodge(0.9),size = 3)+
-  labs(y="Fv/Fm", x="Media Type",fill="Media Type", title="P. tychotreta Photosynthetic Efficiency (PSII)")+
-  theme_bw() + scale_fill_manual(values=colors) + scale_y_continuous(limits=c(0,0.6))
+  labs(y="Fv/Fm", x="Media Type",fill="Media Type", title="P. tychotreta")+
+  theme_bw() + scale_fill_manual(values=colors) + scale_y_continuous(limits=c(0,0.6)) +
+  theme(legend.position = 'none', plot.margin = unit(c(0.25,3.35,0.25,0.25), "cm"))
 ptfv
 
 library(gridExtra)
-grid.arrange(gcfv, mafv, ptfv)
+allfv <- grid.arrange(gcfv, mafv, ptfv)
+combined_plot <- grid.arrange(
+  arrangeGrob(mixo, size, ncol = 1),
+  allfv,
+  widths = c(1, 2)
+)
 
