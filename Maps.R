@@ -1,7 +1,7 @@
 library(tidyverse)
 library(lubridate)
 library(reshape2)
-library(MBA)
+#library(MBA)
 library(mgcv)
 library(ggplot2)
 library(data.table)
@@ -28,8 +28,8 @@ library(tidyr)
  # geom_point(data=az, aes(x=Long, y=Lat), fill='white', color='black') +
  # theme_classic() +
  # theme(panel.background = element_rect(fill = "#54a5d5",
-                                        colour = "#54a5d5",
-                                        size = 0.5, linetype = "solid"))+
+                                    #    colour = "#54a5d5",
+                                    #    size = 0.5, linetype = "solid"))+
  #labs(x="Longitude (ºW)", y="Latitude (ºN)")
 
 az <- read_excel("~/Desktop/OneDrive/Cruises/Azores/StationData.xlsx")
@@ -96,3 +96,64 @@ replayPlot(lterplot)
 size <- par("plt")
 subplot(ccsplot, size[1], size[3], size[2], size[4], "left")
 
+## GG AZ ##
+library(sf)
+library(marmap)
+library(tidyverse)
+library(rnaturalearth)
+library(rnaturalearthdata)
+
+# Get bathymetric data
+azoresbathy <- getNOAA.bathy(lon1=-40, lon2=0, lat1=30, lat2=50, resolution = 4)
+bat_xyz <- as.xyz(azoresbathy)
+
+# Import country data
+country <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Plot using ggplot and sf
+azplot <- ggplot() + 
+  geom_sf(data = country) +
+  geom_tile(data = bat_xyz, aes(x = V1, y = V2, fill = V3)) +
+  geom_sf(data = country) +
+  coord_sf(xlim = c(-40, -5), 
+           ylim = c(30, 50)) +
+  labs(x = "Longitude", y = "Latitude", fill = "Depth (m)") +
+  theme_minimal() +
+  geom_point(data=az, aes(x=Long, y=Lat), colour ="white", size=2) + 
+  geom_point(data=az, aes(x=Long, y=Lat), colour ="black") + 
+  theme(legend.position = 'none')
+
+ccsbathy <-getNOAA.bathy(lon1=-126, lon2=-122, lat1=34, lat2=44, resolution = 1)
+
+bat_xyz <- as.xyz(ccsbathy)
+ccs$Long_deg <- as.numeric(ccs$Long_deg)
+ccsplot <- ggplot() + 
+  geom_sf(data = country) +
+  geom_tile(data = bat_xyz, aes(x = V1, y = V2, fill = V3)) +
+  geom_sf(data = country) +
+  coord_sf(xlim = c(-126, -122), 
+           ylim = c(34, 44)) +
+  labs(x = "Longitude", y = "Latitude", fill = "Depth (m)") +
+  theme_minimal() +
+  geom_point(data=ccs, aes(x=Long_deg, y=Lat_deg), colour ="white", size=2) + 
+  geom_point(data=ccs, aes(x=Long_deg, y=Lat_deg), colour ="black") + 
+  theme(legend.position = 'none')
+ccsplot
+
+lterbathy <-getNOAA.bathy(lon1=-69, lon2=-73, lat1=38, lat2=43, resolution = 1)
+bat_xyz <- as.xyz(lterbathy)
+lterplot <- ggplot() + 
+  geom_sf(data = country) +
+  geom_tile(data = bat_xyz, aes(x = V1, y = V2, fill = V3)) +
+ geom_sf(data = country) +
+  coord_sf(xlim = c(-69, -73), 
+           ylim = c(38, 43)) +
+  labs(x = "Longitude", y = "Latitude", fill = "Depth (m)") +
+  theme_minimal() +
+  geom_point(data=lter, aes(x=Long, y=Lat), colour ="white", size=2) + 
+  geom_point(data=lter, aes(x=Long, y=Lat), colour ="black") + 
+  theme(legend.position = 'none')
+lterplot
+
+library(gridExtra)
+grid.arrange(azplot, ccsplot, lterplot, nrow=2)
