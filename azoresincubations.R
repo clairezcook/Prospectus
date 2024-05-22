@@ -157,23 +157,21 @@ azplot <- ggplot() +
   geom_point(data=az, aes(x=Long, y=Lat), colour ="black") + 
   theme(legend.position = 'none') +
   geom_point(data = nutstations, aes(x = Long, y = Lat), colour = "red", size = 2)+
-  geom_rect(data = nutstations, aes(xmin = Long + 0.5, xmax = Long + 5, ymin = Lat - 0.5, ymax = Lat + 0.5),
+  geom_rect(data = nutstations, aes(xmin = Long + 0.5, xmax = Long + 6, ymin = Lat - 0.5, ymax = Lat + 0.5),
             fill = "white", alpha = 1)+
   geom_text(data = nutstations, aes(x = Long + 0.5, y = Lat, label = NutType),
-            hjust = 0, vjust = 0.5, color = "black", size = 3, 
+            hjust = 0, vjust = 0.5, color = "black", size = 4, 
             position = position_nudge(x = 0.05))+
-  ggtitle("c)")
+  ggtitle("c)") +
+  theme(text = element_text(size = 16))
 
 azplot
 
 library(gridExtra)
 
-# Combine the two bar graphs into a single plot
 combined_plots <- arrangeGrob(nano, percent, ncol = 1)
 
-# Arrange the map and the combined bar graphs horizontally
 final_plot <- grid.arrange(combined_plots, azplot, ncol = 2, widths = c(1, 1))
 
-# Print or save the final plot
 final_plot
 
