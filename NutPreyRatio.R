@@ -57,3 +57,51 @@ ggplot(bacnut, aes(x=Days, y=nutpreyratio, fill=Treatment)) +
   geom_hline(yintercept = .00004, color='#27647B', linetype=2) +
   geom_ribbon(aes(ymin = -Inf, ymax = .000001, fill = "Above Top Hline"), alpha = 0.2) +
   geom_ribbon(aes(ymin = .00004, ymax = Inf, fill = "Below Bottom Hline"), alpha = 0.2)
+
+#### Station 9/10 ####
+#### Nut:Prey ratio ####
+setwd("~/Desktop/OneDrive/Cruises/PUPCYCLE")
+nuts <- read_excel("pup_stnnutrients.xlsx", sheet="calc")
+colnames(nuts)[3]="Replicate"
+setwd("~/Desktop/OneDrive/Cruises/PUPCYCLE/MicroscopeCounts")
+flp <- read_excel("Stn9&10.xlsx", sheet="Sheet2")
+lysonuts <- merge(flp, nuts) %>%
+  unique()
+
+nutpreyratio <-lysonuts%>%
+  filter(Depth=="SUR")%>%
+  mutate(nutpreyratio = (NO3/bacteria)) %>%
+  mutate(upwellstatus = ifelse(Station == 9, "New", ifelse(Station == 10, "Aged", NA)))
+
+
+order <- c("New", "Aged")
+
+data <- data.frame (treatment = nutpreyratio$upwellstatus, result = nutpreyratio$nutpreyratio)
+
+df_aov <- data %>%
+  tidyr::nest() %>%
+  rowwise() %>% 
+  dplyr::mutate(aov_results = list(aov(result ~ treatment, data = data)), 
+                emm = list(emmeans::emmeans(aov_results, "treatment", type= "response")), 
+                cld = list(multcomp::cld(emm, Letters = LETTERS, reverse = TRUE))) %>% 
+  dplyr::select(-data, -aov_results, -emm) %>% 
+  unnest(cols = c(cld)) %>%
+  dplyr::mutate(cld = trimws(.group)) %>% 
+  dplyr::select(-.group)
+df_aov$lower.CL[df_aov$lower.CL < 0] <- 0
+
+ratio <- ggplot(df_aov, aes(x= factor(treatment, levels=order), y = emmean))+
+  geom_bar(position = 'dodge', stat = 'identity')+
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), position = position_dodge(.9), width = 0.2) + 
+  geom_text(aes(label = cld, y = upper.CL), vjust = -0.5, position = position_dodge(0.9),size = 3)+
+  labs(x="", y="Inorganic Nitrogen : Bacteria Ratio", fill="Timepoint")+
+  theme_bw()+theme(
+    text=element_text(size=16))+
+  geom_hline(yintercept = .0000005, color='#CA3542', linetype=2) +
+  geom_hline(yintercept = .000007, color='#27647B', linetype=2) +
+  annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = .0000005, fill = '#CA3542', alpha = 0.2) +
+  annotate("rect", xmin = -Inf, xmax = Inf, ymin = .000007, ymax = Inf, fill = '#27647B', alpha = 0.2) +
+  ggtitle("e)")
+
+ratio
+
