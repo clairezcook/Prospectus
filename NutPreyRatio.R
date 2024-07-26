@@ -53,10 +53,14 @@ ggplot(bacnut, aes(x=Days, y=nutpreyratio, fill=Treatment)) +
   theme(text = element_text(size = 22), legend.position = 'none') +
   scale_x_continuous(breaks=c(0,2,7,11)) + 
   labs(x="Time (days)", y="Inorganic Nitrogen : Bacteria Ratio") +
-  geom_hline(yintercept = .000001, color='#CA3542', linetype=2) +
-  geom_hline(yintercept = .00004, color='#27647B', linetype=2) +
-  geom_ribbon(aes(ymin = -Inf, ymax = .000001, fill = "Above Top Hline"), alpha = 0.2) +
-  geom_ribbon(aes(ymin = .00004, ymax = Inf, fill = "Below Bottom Hline"), alpha = 0.2)
+  #geom_hline(yintercept = 2.86e-5, linetype="dashed", color = "green") +
+  #geom_hline(yintercept = 5.71e-5, linetype="dashed", color = "green") +
+  #geom_hline(yintercept = 5.26e-6, linetype="dashed", color = "red") +
+  #geom_hline(yintercept = 2e-5, linetype="dashed", color = "red")
+  geom_hline(yintercept = 5.26e-06, color='#CA3542', linetype=2) +
+  geom_hline(yintercept = 2.86e-05, color='#27647B', linetype=2) +
+  geom_ribbon(aes(ymin = -Inf, ymax =  5.26e-06, fill = "Above Top Hline"), alpha = 0.2) +
+  geom_ribbon(aes(ymin = 2.86e-05, ymax = Inf, fill = "Below Bottom Hline"), alpha = 0.2)
 
 #### Station 9/10 ####
 #### Nut:Prey ratio ####
